@@ -1,5 +1,5 @@
-from blockchain.blockchain import Blockchain
-from blockchain.permissions import Pouzivatel, ROLE_MANAGER, ROLE_DRIVER
+from blockchain.core.blockchain import Blockchain
+from blockchain.features.permissions import Pouzivatel, ROLE_MANAGER, ROLE_DRIVER
 from blockchain.ui.dashboard import zobraz_dashboard
 
 # Vytvorenie používateľov

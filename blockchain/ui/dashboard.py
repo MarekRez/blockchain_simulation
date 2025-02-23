@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from blockchain.blockchain import Blockchain
+from blockchain.core.blockchain import Blockchain
 
 # Inicializácia blockchainu
 blockchain = Blockchain()
