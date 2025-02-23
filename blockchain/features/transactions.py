@@ -5,7 +5,14 @@ from blockchain.core.block import Blok
 def pridaj_zasielku(self, pouzivatel, zasielka_id, stav, majitel, miesto):
     if not self.over_opravnenie(pouzivatel, "pridaj_zasielku"):
         return
-    novy_blok = Blok(len(self.retazec), self.retazec[-1].hash, zasielka_id, stav, majitel, miesto, time.time(), True, "Pridanie Zásielky", self.obtiaznost, self.encryption_manager)
+
+    novy_blok = Blok(len(self.retazec), self.retazec[-1].hash, zasielka_id, stav, majitel, miesto, time.time(),
+                     True, "Pridanie Zásielky", self.obtiaznost, self.encryption_manager)
+
+    if not novy_blok.over_podpis():
+        print("Blok zamietnutý! Podpis nie je platný.")
+        return
+
     if self.ziskaj_konsenzus(novy_blok):
         self.retazec.append(novy_blok)
         print(f"Blok pridaný používateľom {pouzivatel.meno}: ID zásielky {zasielka_id} - Akcia: Pridanie Zásielky")
@@ -18,7 +25,15 @@ def aktualizuj_miesto(self, pouzivatel, zasielka_id, nove_miesto):
         return
     for blok in reversed(self.retazec):
         if self.encryption_manager.decrypt_data(blok.zasielka_id) == zasielka_id:
-            novy_blok = Blok(len(self.retazec), self.retazec[-1].hash, zasielka_id, self.encryption_manager.decrypt_data(blok.stav), self.encryption_manager.decrypt_data(blok.majitel), nove_miesto, time.time(), True, "Aktualizácia Miesta", self.obtiaznost, self.encryption_manager)
+
+            novy_blok = Blok(len(self.retazec), self.retazec[-1].hash, zasielka_id, self.encryption_manager.decrypt_data(blok.stav),
+                             self.encryption_manager.decrypt_data(blok.majitel), nove_miesto, time.time(), True,
+                             "Aktualizácia Miesta", self.obtiaznost, self.encryption_manager)
+
+            if not novy_blok.over_podpis():
+                print("Blok zamietnutý! Podpis nie je platný.")
+                return
+
             if self.ziskaj_konsenzus(novy_blok):
                 self.retazec.append(novy_blok)
                 print(f"Miesto zásielky {zasielka_id} bolo aktualizované na {nove_miesto} používateľom {pouzivatel.meno}.")
@@ -33,7 +48,15 @@ def prenos_majetku(self, pouzivatel, zasielka_id, novy_majitel):
         return
     for blok in reversed(self.retazec):
         if self.encryption_manager.decrypt_data(blok.zasielka_id) == zasielka_id:
-            novy_blok = Blok(len(self.retazec), self.retazec[-1].hash, zasielka_id, self.encryption_manager.decrypt_data(blok.stav), novy_majitel, self.encryption_manager.decrypt_data(blok.miesto), time.time(), True, "Prenos Majetku", self.obtiaznost, self.encryption_manager)
+
+            novy_blok = Blok(len(self.retazec), self.retazec[-1].hash, zasielka_id, self.encryption_manager.decrypt_data(blok.stav),
+                             novy_majitel, self.encryption_manager.decrypt_data(blok.miesto), time.time(), True,
+                             "Prenos Majetku", self.obtiaznost, self.encryption_manager)
+
+            if not novy_blok.over_podpis():
+                print("Blok zamietnutý! Podpis nie je platný.")
+                return
+
             if self.ziskaj_konsenzus(novy_blok):
                 self.retazec.append(novy_blok)
                 print(f"Majiteľ zásielky {zasielka_id} bol zmenený na {novy_majitel} používateľom {pouzivatel.meno}.")
